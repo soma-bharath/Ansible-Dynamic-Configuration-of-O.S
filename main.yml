@@ -1,0 +1,23 @@
+- hosts: all
+  vars_files:
+  - "{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_major_version'] }}.yml"
+  tasks:
+  - debug:
+     msg: "{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_major_version'] }}"
+  - name: "Installing packages"
+    package:
+     name: "{{ softwarename }}"
+  - name: setting up web pages
+    template:
+     src: "{{ source }}"
+     dest: "{{ destination }}"
+    notify: Restart webserver
+  - name: starting webserver
+    service:
+     name: "{{ softwarename }}"
+     state: started
+  handlers:
+  - name: Restart webserver
+    service:
+     name: "{{ softwarename }}"
+     state: restarted
